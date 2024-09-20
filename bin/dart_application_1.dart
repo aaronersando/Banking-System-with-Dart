@@ -129,7 +129,7 @@ void loginMenu(){
     print("...Loading");
     sleep(Duration(seconds:2));
     print("\x1B[2J\x1B[0;0H");
-    userMenu();
+    // userMenu();
   }
   else{
     print("Double check your password and username");
@@ -140,6 +140,4 @@ void loginMenu(){
   }
 }
 
-void userMenu(){
 
-}
