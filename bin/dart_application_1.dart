@@ -1,22 +1,35 @@
 import 'dart:io';
-
-late personAccount p1;
+import 'dart:convert';
 
 void main() {
-  outMenu();
+  checkAndCreateFile();
+  // outMenu();
 }
 
-class personAccount{
-    late String pname;
-    late String pusername;
-    late String ppassword;
-    double pbalance = 0;
+class User{
+    late String name;
+    late String username;
+    late String password;
+    double balance = 0;
 
-  personAccount(String pname, String pusername, String ppassword, double pbalance){
-    this.pname = pname;
-    this.pusername = pusername;
-    this.ppassword = ppassword;
-    this.pbalance = pbalance;
+  User(this.name, this.username, this.password, this.balance);
+
+  Map<String, dynamic> toJson() =>{
+    'name': name,
+    'username': username,
+    'password': password,
+    'balance': balance
+  };
+}
+
+void checkAndCreateFile() {
+  // Check if the users.json file exists
+  File file = File('users.json');
+
+  if (!file.existsSync()) {
+    // Create an empty users.json file if it doesn't exist
+    file.writeAsStringSync(jsonEncode([])); // An empty list of users
+    print('Created new users.json file.');
   }
 }
 
@@ -35,6 +48,7 @@ void outMenu(){
         break;
 
       case '2':
+        loginMenu();
         break;
 
       case '3':
@@ -74,7 +88,7 @@ void registerMenu(){
 
 
   if(status == 1){
-      p1 = new personAccount(name, userName, password, balance);
+      User p1 = new User(name, userName, password, balance);
       print("\x1B[2J\x1B[0;0H");
       print("Account succesfully registered!");
 
@@ -124,20 +138,20 @@ void loginMenu(){
   stdout.write("Password: ");
   String? password = stdin.readLineSync()!;
 
-  if(username == p1.pusername && password == p1.ppassword){
-    print("Logged in succesfully!");
-    print("...Loading");
-    sleep(Duration(seconds:2));
-    print("\x1B[2J\x1B[0;0H");
-    // userMenu();
-  }
-  else{
-    print("Double check your password and username");
-    print("...Loading");
-    sleep(Duration(seconds:2));
-    print("\x1B[2J\x1B[0;0H");
-    registerMenu();
-  }
+  // if(username == p1.pusername && password == p1.ppassword){
+  //   print("Logged in succesfully!");
+  //   print("...Loading");
+  //   sleep(Duration(seconds:2));
+  //   print("\x1B[2J\x1B[0;0H");
+  //   // userMenu();
+  // }
+  // else{
+  //   print("Double check your password and username");
+  //   print("...Loading");
+  //   sleep(Duration(seconds:2));
+  //   print("\x1B[2J\x1B[0;0H");
+  //   registerMenu();
+  // }
 }
 
 
