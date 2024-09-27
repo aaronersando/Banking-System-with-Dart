@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'dart:convert';
+
+late User u1;
 
 void main() {
-  checkAndCreateFile();
   outMenu();
 }
 
@@ -13,49 +13,6 @@ class User{
     double balance = 0;
 
   User(this.name, this.username, this.password, this.balance);
-
-  Map<String, dynamic> toJson() =>{
-    'name': name,
-    'username': username,
-    'password': password,
-    'balance': balance
-  };
-
-   // Create User object from JSON data
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      json['name'],
-      json['username'],
-      json['password'],
-      json['balance'].toDouble()
-    );
-  }
-}
-
-void checkAndCreateFile() {
-  // Check if the users.json file exists
-  File file = File('users.json');
-
-  if (!file.existsSync()) {
-    // Create an empty users.json file if it doesn't exist
-    file.writeAsStringSync(jsonEncode([])); // An empty list of users
-    print('Created new users.json file.');
-  }
-}
-
-// Function to load users from the JSON file
-Future<List<User>> loadUsersFromFile(String filePath) async {
-  final file = File(filePath);
-
-  if (!await file.exists()) {
-    // If file doesn't exist, return an empty list
-    return [];
-  }
-
-  final contents = await file.readAsString();
-  List<dynamic> jsonData = jsonDecode(contents);
-
-  return jsonData.map((json) => User.fromJson(json)).toList();
 }
 
 void outMenu(){
@@ -73,7 +30,7 @@ void outMenu(){
         break;
 
       case '2':
-        loginMenu();
+      loginMenu();
         break;
 
       case '3':
@@ -113,7 +70,7 @@ void registerMenu(){
 
 
   if(status == 1){
-      User p1 = User(name, userName, password, balance);
+      u1 = User(name, userName, password, balance);
       print("\x1B[2J\x1B[0;0H");
       print("Account succesfully registered!");
 
@@ -163,12 +120,12 @@ void loginMenu(){
   stdout.write("Password: ");
   String? password = stdin.readLineSync()!;
 
-  // if(username == p1.pusername && password == p1.ppassword){
+  // if(username == u1.username && password == u1.password){
   //   print("Logged in succesfully!");
   //   print("...Loading");
   //   sleep(Duration(seconds:2));
   //   print("\x1B[2J\x1B[0;0H");
-  //   // userMenu();
+  //   userMenu();
   // }
   // else{
   //   print("Double check your password and username");
@@ -180,3 +137,69 @@ void loginMenu(){
 }
 
 
+
+
+void userMenu(){
+
+  print("\x1B[2J\x1B[0;0H");
+  print("\t\t\t\t\tWelcome User!\n\n");
+
+  stdout.write("Username: User");
+  stdout.write("Name: ");
+  
+  print("[1] Check Balance\n[2] Deposit Money\n[3] Withdraw Money\n[4] Transaction History\n[5] Log Out\n[6] Exit");
+
+    stdout.write('Enter your choice (put only the number eg. 1): ');
+
+    String? choice = stdin.readLineSync();
+    
+    switch(choice){
+
+      case '1':
+      registerMenu();
+        break;
+
+      case '2':
+      deposit();
+        break;
+
+      case '3':
+      withdraw();
+        break;
+
+      case '4':
+      transactionHistory();
+        break;
+
+      case '5':
+        outMenu();
+        break;
+
+      case '6':
+        exit(0);
+  
+      default:
+        print("Enter only from 1 to 3");
+        print("...Loading");
+        sleep(Duration(seconds:2));
+        print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+        outMenu();
+  }
+}
+
+// User Options
+void checkBalance(){
+  
+}
+
+void deposit(){
+
+}
+
+void withdraw(){
+
+}
+
+void transactionHistory(){
+
+}
