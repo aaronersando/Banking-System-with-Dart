@@ -120,20 +120,20 @@ void loginMenu(){
   stdout.write("Password: ");
   String? password = stdin.readLineSync()!;
 
-  // if(username == u1.username && password == u1.password){
-  //   print("Logged in succesfully!");
-  //   print("...Loading");
-  //   sleep(Duration(seconds:2));
-  //   print("\x1B[2J\x1B[0;0H");
-  //   userMenu();
-  // }
-  // else{
-  //   print("Double check your password and username");
-  //   print("...Loading");
-  //   sleep(Duration(seconds:2));
-  //   print("\x1B[2J\x1B[0;0H");
-  //   registerMenu();
-  // }
+  if(username == u1.username && password == u1.password){
+    print("Logged in succesfully!");
+    print("...Loading");
+    sleep(Duration(seconds:2));
+    print("\x1B[2J\x1B[0;0H");
+    userMenu();
+  }
+  else{
+    print("Double check your password and username");
+    print("...Loading");
+    sleep(Duration(seconds:2));
+    print("\x1B[2J\x1B[0;0H");
+    registerMenu();
+  }
 }
 
 
@@ -142,10 +142,10 @@ void loginMenu(){
 void userMenu(){
 
   print("\x1B[2J\x1B[0;0H");
-  print("\t\t\t\t\tWelcome User!\n\n");
+  print("\t\t\t\t\tWelcome ${u1.name}!\n\n");
 
-  stdout.write("Username: User");
-  stdout.write("Name: ");
+  print("Username: ${u1.username}");
+  print("Name: ${u1.name}");
   
   print("[1] Check Balance\n[2] Deposit Money\n[3] Withdraw Money\n[4] Transaction History\n[5] Log Out\n[6] Exit");
 
@@ -156,7 +156,56 @@ void userMenu(){
     switch(choice){
 
       case '1':
-      registerMenu();
+      checkBalance();
+        break;
+
+      case '2':
+      deposit();
+        break;
+
+      case '3':
+      withdraw();
+        break;
+
+      case '4':
+      transactionHistory();
+        break;
+
+      case '5':
+        outMenu();
+        break;
+
+      case '6':
+        exit(0);
+  
+      default:
+        print("Enter only from 1 to 6");
+        print("...Loading");
+        sleep(Duration(seconds:2));
+        print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+        userMenu();
+  }
+}
+
+// User Options
+void checkBalance(){
+
+  print("\x1B[2J\x1B[0;0H");
+  print("\t\t\t\t\tCheck Balance\n\n");
+
+  print("Username: ${u1.username}");
+  print("Balance: ${u1.balance}");
+  
+  print("[1] Return to Menu\n[2] Deposit Money\n[3] Withdraw Money\n[4] Transaction History\n[5] Log Out\n[6] Exit");
+
+    stdout.write('Enter your choice (put only the number eg. 1): ');
+
+    String? choice = stdin.readLineSync();
+    
+    switch(choice){
+
+      case '1':
+      userMenu();
         break;
 
       case '2':
@@ -187,17 +236,134 @@ void userMenu(){
   }
 }
 
-// User Options
-void checkBalance(){
-  
-}
-
 void deposit(){
+  print("\x1B[2J\x1B[0;0H");
+  print("\t\t\t\t\tDeposit Money\n\n");
 
+  print("Username: ${u1.username}");
+  stdout.write("Enter Ammount: ");
+  String? amount = stdin.readLineSync()!;
+  if(double.parse(amount) < 0){
+    print("Enter above 0 money");
+    print("...Loading");
+    sleep(Duration(seconds:2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    deposit();
+  }
+  else{
+    u1.balance += double.parse(amount);
+  }
+  print("Deposit Successful\n\n");
+
+  
+  print("[1] Check Balance\n[2] Return to Menu\n[3] Withdraw Money\n[4] Transaction History\n[5] Log Out\n[6] Exit");
+
+    stdout.write('Enter your choice (put only the number eg. 1): ');
+
+    String? choice = stdin.readLineSync();
+    
+    switch(choice){
+
+      case '1':
+      checkBalance();
+        break;
+
+      case '2':
+      userMenu();
+        break;
+
+      case '3':
+      withdraw();
+        break;
+
+      case '4':
+      transactionHistory();
+        break;
+
+      case '5':
+        outMenu();
+        break;
+
+      case '6':
+        exit(0);
+  
+      default:
+        print("Enter only from 1 to 3");
+        print("...Loading");
+        sleep(Duration(seconds:2));
+        print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+        outMenu();
+  }
 }
 
 void withdraw(){
+  print("\x1B[2J\x1B[0;0H");
+  print("\t\t\t\t\tWithdraw Money\n\n");
 
+  print("Username: ${u1.username}");
+  stdout.write("Enter amount to withdraw: ");
+  String? amount = stdin.readLineSync()!;
+  if(double.parse(amount) < 0){
+    print("Enter above 0 amount");
+    print("...Loading");
+    sleep(Duration(seconds:2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    deposit();
+  }
+  else{
+    if(double.parse(amount) > u1.balance){
+      print("Insufficient Balance, try again!");
+      print("...Loading");
+      sleep(Duration(seconds:2));
+      print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+      withdraw();
+    }
+    else{
+      u1.balance -= double.parse(amount);
+    }
+  }
+
+  print("Withdraw Successful\n\n");
+
+  
+  print("[1] Check Balance\n[2] Return to Menu\n[3] Withdraw Money\n[4] Transaction History\n[5] Log Out\n[6] Exit");
+
+    stdout.write('Enter your choice (put only the number eg. 1): ');
+
+    String? choice = stdin.readLineSync();
+    
+    switch(choice){
+
+      case '1':
+      checkBalance();
+        break;
+
+      case '2':
+      deposit();
+        break;
+
+      case '3':
+      userMenu();
+        break;
+
+      case '4':
+      transactionHistory();
+        break;
+
+      case '5':
+        outMenu();
+        break;
+
+      case '6':
+        exit(0);
+  
+      default:
+        print("Enter only from 1 to 3");
+        print("...Loading");
+        sleep(Duration(seconds:2));
+        print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+        outMenu();
+  }
 }
 
 void transactionHistory(){
