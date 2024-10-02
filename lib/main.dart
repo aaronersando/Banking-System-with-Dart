@@ -369,6 +369,7 @@ void deposit() {
   }
 
   u1!.balance += amount; // Update the balance
+  updateUserData(u1!);
   print("Deposit successful!");
   
 
@@ -418,6 +419,7 @@ void withdraw() {
     print("Insufficient balance. Current balance: ${u1!.balance}");
   } else {
     u1!.balance -= amount; // Update the balance
+    updateUserData(u1!);
     print("Withdrawal successful!");
   }
 
@@ -442,6 +444,28 @@ void withdraw() {
       userMenu();
   }
 }
+
+void updateUserData(User user) {
+  File file = File('users.json');
+
+  if (file.existsSync()) {
+    // Read existing data
+    List<dynamic> existingUsers = jsonDecode(file.readAsStringSync());
+
+    // Find the user and update the balance
+    for (int i = 0; i < existingUsers.length; i++) {
+      if (existingUsers[i]['username'] == user.username) {
+        existingUsers[i]['balance'] = user.balance;
+        break;
+      }
+    }
+
+    // Write the updated data back to the file
+    file.writeAsStringSync(jsonEncode(existingUsers));
+  }
+}
+
+
 
 void transactionHistory() {
   // Placeholder for transaction history functionality
