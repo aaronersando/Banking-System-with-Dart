@@ -1,1 +1,1 @@
-[{"name":"aaron","username":"aaron","password":"a","balance":1000},{"name":"baby","username":"bantot","password":"babyko","balance":1000000},{"name":"aaron","username":"alex","password":"aaron","balance":1200},{"name":"a","username":"a","password":"a","balance":5000},{"name":"gab","username":"gab","password":"gab","balance":7000.0}]
+[{"name":"aaron","username":"aaron","password":"aaron","balance":61800.0,"transactions":["Deposited: $60000","Withdrew: $500"]}]

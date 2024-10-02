@@ -12,20 +12,24 @@ class User {
   late String username;
   late String password;
   num balance = 0;
+  List<String> transactions = []; // New field for transaction history
 
   User({
     required this.name,
     required this.username,
     required this.password,
     required this.balance,
+    this.transactions = const [], // Default to empty list if not provided
   });
 
+  // Save user to JSON, including transactions
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'username': username,
       'password': password,
       'balance': balance,
+      'transactions': transactions, // Include transaction history
     };
   }
 
@@ -35,10 +39,13 @@ class User {
       name: json['name'],
       username: json['username'],
       password: json['password'],
-      balance: (json['balance'] as num).toDouble(), // Ensure balance is double
+      balance: (json['balance'] as num).toDouble(),
+      transactions: List<String>.from(json['transactions'] ?? []), // Ensure transactions are loaded
     );
   }
 }
+
+
 
 // Function to register a new user and save to a file
 User? registerUser(String name, String username, String password, num balance) {
@@ -120,12 +127,9 @@ User? loginUser(String username, String password) {
   // Search for the user with the matching username and password
   for (User user in users) {
     if (user.username == username && user.password == password) {
-      print('Login successful. Welcome ${user.name}!');
       return user; // Return the matched user object
     }
   }
-
-  print('Login failed. Invalid username or password.');
   return null; // Return null if no match is found
 }
 
@@ -271,7 +275,15 @@ void loginMenu() {
     sleep(Duration(seconds: 2));
     print("\x1B[2J\x1B[0;0H");
     userMenu();
-  } else {
+  } 
+  else if(userExist(username) == false){
+    print("User does not exist, try again!");
+    print("...Loading");
+    sleep(Duration(seconds: 2));
+    print("\x1B[2J\x1B[0;0H");
+    loginMenu();
+  }
+  else {
     print('Login failed. Invalid username or password.');
     print("...Loading");
     sleep(Duration(seconds: 2));
@@ -365,40 +377,36 @@ void deposit() {
   stdout.write("Enter the amount to deposit: ");
   String? amountInput = stdin.readLineSync()!;
   num amount = 0;
-  if(isNumeric(amountInput)){
+  if (isNumeric(amountInput)) {
     amount = num.parse(amountInput);
-  }
-  else{
+  } else {
     print("\n\nEnter proper amount (only numbers from 0 and above)");
     print("...Loading");
     sleep(Duration(seconds: 2));
-    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    print("\x1B[2J\x1B[0;0H");
     deposit();
   }
 
-  u1!.balance += amount; // Update the balance
-  updateUserData(u1!);
+  u1!.balance += amount;
+  u1!.transactions.add("Deposited: $amount"); // Log transaction
+  updateUserData(u1!); // Save user data, including the transaction
+
   print("Deposit successful!");
-  
 
   print("\n\n[1] Back to User Menu\n[2] Exit");
   stdout.write('Enter your choice (put only the number eg. 1): ');
-
   String? choice = stdin.readLineSync();
-
   switch (choice) {
     case '1':
       userMenu();
       break;
-
     case '2':
       exit(0);
-
     default:
       print("Enter only from 1 to 2");
       print("...Loading");
       sleep(Duration(seconds: 2));
-      print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+      print("\x1B[2J\x1B[0;0H");
       userMenu();
   }
 }
@@ -412,66 +420,61 @@ void withdraw() {
   stdout.write("Enter the amount to withdraw: ");
   String? amountInput = stdin.readLineSync()!;
   num amount = 0;
-  if(isNumeric(amountInput)){
+  if (isNumeric(amountInput)) {
     amount = num.parse(amountInput);
-  }
-  else{
+  } else {
     print("\n\nEnter proper amount (only numbers from 0 and above)");
     print("...Loading");
     sleep(Duration(seconds: 2));
-    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    print("\x1B[2J\x1B[0;0H");
     withdraw();
   }
 
   if (amount > u1!.balance) {
     print("Insufficient balance. Current balance: ${u1!.balance}");
   } else {
-    u1!.balance -= amount; // Update the balance
-    updateUserData(u1!);
+    u1!.balance -= amount;
+    u1!.transactions.add("Withdrew: $amount"); // Log transaction
+    updateUserData(u1!); // Save user data, including the transaction
     print("Withdrawal successful!");
   }
 
   print("\n\n[1] Back to User Menu\n[2] Exit");
   stdout.write('Enter your choice (put only the number eg. 1): ');
-
   String? choice = stdin.readLineSync();
-
   switch (choice) {
     case '1':
       userMenu();
       break;
-
     case '2':
       exit(0);
-
     default:
       print("Enter only from 1 to 2");
       print("...Loading");
       sleep(Duration(seconds: 2));
-      print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+      print("\x1B[2J\x1B[0;0H");
       userMenu();
   }
 }
+
 
 void updateUserData(User user) {
   File file = File('users.json');
 
   if (file.existsSync()) {
-    // Read existing data
     List<dynamic> existingUsers = jsonDecode(file.readAsStringSync());
 
-    // Find the user and update the balance
     for (int i = 0; i < existingUsers.length; i++) {
       if (existingUsers[i]['username'] == user.username) {
-        existingUsers[i]['balance'] = user.balance;
+        existingUsers[i] = user.toJson(); // Update the user's data, including transactions
         break;
       }
     }
 
-    // Write the updated data back to the file
     file.writeAsStringSync(jsonEncode(existingUsers));
   }
 }
+
 
 bool userExist(String username) {
   File file = File('users.json');
@@ -493,30 +496,32 @@ bool userExist(String username) {
 
 
 void transactionHistory() {
-  // Placeholder for transaction history functionality
   print("\x1B[2J\x1B[0;0H");
   print("\t\t\t\t\tTransaction History\n\n");
 
-  // Add transaction history code here
+  if (u1!.transactions.isEmpty) {
+    print("No transactions available.");
+  } else {
+    for (var transaction in u1!.transactions) {
+      print(transaction); // Print each transaction
+    }
+  }
 
   print("\n\n[1] Back to User Menu\n[2] Exit");
   stdout.write('Enter your choice (put only the number eg. 1): ');
 
   String? choice = stdin.readLineSync();
-
   switch (choice) {
     case '1':
       userMenu();
       break;
-
     case '2':
       exit(0);
-
     default:
       print("Enter only from 1 to 2");
       print("...Loading");
       sleep(Duration(seconds: 2));
-      print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+      print("\x1B[2J\x1B[0;0H");
       userMenu();
   }
 }
