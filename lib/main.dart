@@ -158,56 +158,91 @@ void outMenu() {
   }
 }
 
+
+
+bool isAlpha(String input) {
+  for (int i = 0; i < input.length; i++) {
+    if (!((input.codeUnitAt(i) >= 65 && input.codeUnitAt(i) <= 90) || // A-Z
+          (input.codeUnitAt(i) >= 97 && input.codeUnitAt(i) <= 122))) { // a-z
+      return false;
+    }
+  }
+  return true;
+}
+
+bool isNumeric(String input) {
+  for (int i = 0; i < input.length; i++) {
+    if (input.codeUnitAt(i) < 48 || input.codeUnitAt(i) > 57) { // ASCII code for '0' is 48, '9' is 57
+      return false;
+    }
+  }
+  return true;
+}
+
+
 void registerMenu() {
   print("\x1B[2J\x1B[0;0H");
   print("\t\t\t\t\tWelcome to Simple Bank!\n\n\tRegister: ");
   print("(Enter your credentials)");
   stdout.write("Name: ");
   String? name = stdin.readLineSync()!;
-  stdout.write("Username: ");
-  String? userName = stdin.readLineSync()!;
-  stdout.write("Password: ");
-  String? password = stdin.readLineSync()!;
-  stdout.write("Initial Balance: ");
-  String? inbalance = stdin.readLineSync()!;
-  num balance = num.parse(inbalance);
-
-  if (balance < 0) {
-    print("\n\nEnter proper balance (only 0 and above)");
+  if(!isAlpha(name)){
+    print("\n\nEnter only characters");
     print("...Loading");
     sleep(Duration(seconds: 2));
     print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
     registerMenu();
-  } else {
-    User? registeredUser = registerUser(name, userName, password, balance);
-    print("\x1B[2J\x1B[0;0H");
-    print("Account successfully registered!");
+  }
 
-    print("What do you want to do:\n\n[1] Register Another Account\n[2] Log In to your account\n[3] Exit Program");
+  stdout.write("Username: ");
+  String? userName = stdin.readLineSync()!;
 
-    stdout.write('Enter your choice (put only the number eg. 1): ');
+  stdout.write("Password: ");
+  String? password = stdin.readLineSync()!;
 
-    String? choice = stdin.readLineSync();
+  stdout.write("Initial Balance: ");
+  String? inbalance = stdin.readLineSync()!;
+  num balance = 0;
+  if(isNumeric(inbalance)){
+    balance = num.parse(inbalance);
+  }
+  else{
+    print("\n\nEnter proper balance (only numbers from 0 and above)");
+    print("...Loading");
+    sleep(Duration(seconds: 2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    registerMenu();
+  }
 
-    switch (choice) {
-      case '1':
-        registerMenu();
-        break;
+  User? registeredUser = registerUser(name, userName, password, balance);
+  print("\x1B[2J\x1B[0;0H");
+  print("Account successfully registered!");
 
-      case '2':
-        loginMenu();
-        break;
+  print("What do you want to do:\n\n[1] Register Another Account\n[2] Log In to your account\n[3] Exit Program");
 
-      case '3':
-        exit(0);
+  stdout.write('Enter your choice (put only the number eg. 1): ');
 
-      default:
-        print("Enter only from 1 to 3");
-        print("...Loading");
-        sleep(Duration(seconds: 2));
-        print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
-        outMenu();
-    }
+  String? choice = stdin.readLineSync();
+
+  switch (choice) {
+    case '1':
+      registerMenu();
+      break;
+
+    case '2':
+      loginMenu();
+      break;
+
+    case '3':
+      exit(0);
+
+    default:
+      print("Enter only from 1 to 3");
+      print("...Loading");
+      sleep(Duration(seconds: 2));
+      print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+      outMenu();
+    
   }
 }
 
@@ -233,7 +268,7 @@ void loginMenu() {
     print("...Loading");
     sleep(Duration(seconds: 2));
     print("\x1B[2J\x1B[0;0H");
-    registerMenu();
+    loginMenu();
   }
 }
 
@@ -321,14 +356,21 @@ void deposit() {
 
   stdout.write("Enter the amount to deposit: ");
   String? amountInput = stdin.readLineSync()!;
-  double amount = double.parse(amountInput);
-
-  if (amount <= 0) {
-    print("Invalid deposit amount. Please enter a positive number.");
-  } else {
-    u1!.balance += amount; // Update the balance
-    print("Deposit successful! New balance: ${u1?.balance}");
+  num amount = 0;
+  if(isNumeric(amountInput)){
+    amount = num.parse(amountInput);
   }
+  else{
+    print("\n\nEnter proper amount (only numbers from 0 and above)");
+    print("...Loading");
+    sleep(Duration(seconds: 2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    deposit();
+  }
+
+  u1!.balance += amount; // Update the balance
+  print("Deposit successful!");
+  
 
   print("\n\n[1] Back to User Menu\n[2] Exit");
   stdout.write('Enter your choice (put only the number eg. 1): ');
@@ -360,15 +402,23 @@ void withdraw() {
 
   stdout.write("Enter the amount to withdraw: ");
   String? amountInput = stdin.readLineSync()!;
-  double amount = double.parse(amountInput);
+  num amount = 0;
+  if(isNumeric(amountInput)){
+    amount = num.parse(amountInput);
+  }
+  else{
+    print("\n\nEnter proper amount (only numbers from 0 and above)");
+    print("...Loading");
+    sleep(Duration(seconds: 2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    withdraw();
+  }
 
-  if (amount <= 0) {
-    print("Invalid withdrawal amount. Please enter a positive number.");
-  } else if (amount > u1!.balance) {
+  if (amount > u1!.balance) {
     print("Insufficient balance. Current balance: ${u1!.balance}");
   } else {
     u1!.balance -= amount; // Update the balance
-    print("Withdrawal successful! New balance: ${u1?.balance}");
+    print("Withdrawal successful!");
   }
 
   print("\n\n[1] Back to User Menu\n[2] Exit");
