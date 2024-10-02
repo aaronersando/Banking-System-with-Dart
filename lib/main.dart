@@ -197,6 +197,14 @@ void registerMenu() {
   stdout.write("Username: ");
   String? userName = stdin.readLineSync()!;
 
+  if(userExist(userName)){
+    print("\n\nUsername already exists, try putting another username)");
+    print("...Loading");
+    sleep(Duration(seconds: 2));
+    print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
+    registerMenu();
+  }
+
   stdout.write("Password: ");
   String? password = stdin.readLineSync()!;
 
@@ -465,6 +473,23 @@ void updateUserData(User user) {
   }
 }
 
+bool userExist(String username) {
+  File file = File('users.json');
+
+  if (file.existsSync()) {
+    // Read existing data
+    List<dynamic> existingUsers = jsonDecode(file.readAsStringSync());
+
+    // Find the user and update the balance
+    for (int i = 0; i < existingUsers.length; i++) {
+      if (existingUsers[i]['username'] == username) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return false;
+}
 
 
 void transactionHistory() {
